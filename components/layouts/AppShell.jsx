@@ -1,6 +1,8 @@
 
 "use client";
 import BudgetPlanner from "../budget/Budgetplanner"; 
+import NotificationCenter from "./NotificationCenter";
+import WelcomeModal from "./WelcomeModal";
 import SavingsGoals from "../savings/SavingsGoals"; 
 import Assistant from "../assistant/Assistant";
 import Analytics from "../analytics/Analytics";  
@@ -1763,7 +1765,7 @@ function Dashboard({
       <div className="page-heading">
         <div>
           <h1 className="page-title">
-            Hey, {profile.name}! 👋
+     Hey, {profile?.name || "there"}! 👋
           </h1>
 
           <p className="page-subtitle">
@@ -2623,38 +2625,78 @@ export default function AppShell() {
     <div className="app-shell">
       <div className="main-area">
 
-        {/* MOBILE HEADER */}
+     
+{/* MOBILE HEADER */}
+<div className="mobile-header">
+  <Brand />
 
-        <div className="mobile-header">
-          <Brand />
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+    }}
+  >
+    {/* AI ASSISTANT */}
+    <button
+      type="button"
+      onClick={() => setActive("AI Assistant")}
+      aria-label="Open AI Assistant"
+      title="AI Money Coach"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 6,
+        padding: "9px 12px",
+        border:
+          active === "AI Assistant"
+            ? "1px solid #d91b70"
+            : "1px solid #f5c6dc",
+        borderRadius: 12,
+        background:
+          active === "AI Assistant"
+            ? "#fce8f1"
+            : "#fff5f9",
+        color: "#d91b70",
+        fontSize: 11,
+        fontWeight: 800,
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+      }}
+    >
+      <Sparkles size={16} strokeWidth={2.3} />
+      AI
+    </button>
 
-          <div style={{ display: "flex", gap: 10 }}>
-            <button
-              className="icon-button"
-              aria-label="Notifications"
-              onClick={() =>
-                window.alert("Notifications will be available soon.")
-              }
-            >
-              <Bell size={18} />
-            </button>
+   {/* LIVE NOTIFICATIONS */}
+<NotificationCenter
+  transactions={transactions}
+  financials={financials}
+  setActive={setActive}
+/>
 
-           <button
-  type="button"
-  className={`avatar ${active === "Settings" ? "active" : ""}`}
-  aria-label="Open profile and settings"
-  title="Profile & Settings"
-  onClick={() => setActive("Settings")}
-  style={{
-    border: "none",
-    cursor: "pointer",
-    font: "inherit",
-  }}
->
-  {profile.name.charAt(0).toUpperCase()}
-</button>
-          </div>
-        </div>
+    {/* PROFILE */}
+    <button
+      type="button"
+      className={`avatar ${
+        active === "Settings" ? "active" : ""
+      }`}
+      aria-label="Open profile and settings"
+      title="Profile & Settings"
+      onClick={() => setActive("Settings")}
+      style={{
+        border: "none",
+        cursor: "pointer",
+        font: "inherit",
+      }}
+    >
+      {profile.name.charAt(0).toUpperCase()}
+    </button>
+  </div>
+  
+</div>
+
 
         {/* DESKTOP TOP NAVIGATION */}
 
@@ -2667,18 +2709,20 @@ export default function AppShell() {
 
 <main className="main-content">
   <AnimatePresence mode="wait">
-    {active === "Dashboard" ? (
-      <Dashboard
-        key="dashboard"
-        hidden={hidden}
-        setHidden={setHidden}
-        setActive={setActive}
-        financials={financials}
-        transactions={transactions}
-        onAddTransaction={openAddModal}
-        profile={profile}
-        monthlyPocketMoney={monthlyPocketMoney}
-      />
+   {active === "Dashboard" ? (
+  <>
+   
+
+    <Dashboard
+      key="dashboard"
+      hidden={hidden}
+      setHidden={setHidden}
+      setActive={setActive}
+      financials={financials}
+      transactions={transactions}
+    profile={profile}
+    />
+  </>
     ) : active === "Transactions" ? (
       <TransactionsPage
         key="transactions"
@@ -2754,6 +2798,8 @@ export default function AppShell() {
           />
         )}
       </AnimatePresence>
+      <WelcomeModal profile={profile} />
+      
     </div>
   );
 }
